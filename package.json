@@ -1,0 +1,23 @@
+{
+  "name": "blockpy",
+  "version": "1.0.0",
+  "description": "corgis-blockly ==============",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JC-Orozco/blockpy.git"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/JC-Orozco/blockpy/issues"
+  },
+  "homepage": "https://github.com/JC-Orozco/blockpy#readme"
+}
