@@ -1,19 +1,3 @@
-Blockly.Python['tuple_create'] = function(block) {
-    // Create a list with any number of elements of any type.
-    var elements = new Array(block.itemCount_);
-    for (var i = 0; i < block.itemCount_; i++) {
-        elements[i] = (Blockly.Python.valueToCode(block, 'ADD' + i,
-            Blockly.Python.ORDER_NONE) || '___' );
-    }
-    var code = elements.join(', ');
-    if (block.itemCount_ == 1) {
-        code = '(' + code + ',)';
-    } else {
-        code = '(' + code + ')';
-    }
-    return [code, Blockly.Python.ORDER_ATOMIC];
-}
-
 Blockly.Blocks['tuple_create'] = {
   /**
    * Block for creating a list with any number of elements of any type.
@@ -53,4 +37,29 @@ Blockly.Blocks['tuple_create'] = {
    * @this Blockly.Block
    */
   updateShape_: PLUS_MINUS_updateShape('ADD', "create tuple of")
+};
+Blockly.Python['tuple_create'] = function(block) {
+    // Create a list with any number of elements of any type.
+    var elements = new Array(block.itemCount_);
+    for (var i = 0; i < block.itemCount_; i++) {
+        elements[i] = (Blockly.Python.valueToCode(block, 'ADD' + i,
+            Blockly.Python.ORDER_NONE) || '___' );
+    }
+    var code = elements.join(', ');
+    if (block.itemCount_ == 1) {
+        code = '(' + code + ',)';
+    } else {
+        code = '(' + code + ')';
+    }
+    return [code, Blockly.Python.ORDER_ATOMIC];
+};
+Blockly.JavaScript['tuple_create'] = function(block) {
+    // Create a list with any number of elements of any type.
+    var elements = new Array(block.itemCount_);
+    for (var i = 0; i < block.itemCount_; i++) {
+        elements[i] = (Blockly.JavaScript.valueToCode(block, 'ADD' + i,
+            Blockly.JavaScript.ORDER_NONE) || '___' );
+    }
+    var code = '[' + elements.join(', ') + ']';
+    return [code, Blockly.JavaScript.ORDER_ATOMIC];
 };

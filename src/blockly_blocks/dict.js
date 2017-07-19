@@ -98,4 +98,17 @@ Blockly.Python.dicts_create_with = function(block) {
     code = '{' + code.join(', ') + '}';
     return [code, Blockly.Python.ORDER_ATOMIC];
 };
-
+Blockly.JavaScript.dicts_create_with = function(block) {
+    var value_keys = Blockly.JavaScript.valueToCode(block, 'keys', Blockly.   JavaScript.ORDER_ATOMIC);
+    // TODO: Assemble JavaScript into code variable.
+    var code = new Array(block.itemCount_);
+  
+    for (var n = 1; n <= block.itemCount_; n++) {
+        var key = Blockly.JavaScript.quote_(block.getFieldValue('KEY' + n));
+        var value = Blockly.JavaScript.valueToCode(block, 'VALUE' + n,
+                Blockly.JavaScript.ORDER_NONE) || '___';
+        code[n-1] = key +": "+ value;
+    }
+    code = '{' + code.join(', ') + '}';
+    return [code, Blockly.JavaScript.ORDER_ATOMIC];
+};

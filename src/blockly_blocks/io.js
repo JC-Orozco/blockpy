@@ -24,3 +24,8 @@ Blockly.Python['text_input'] = function(block) {
   var code = 'input('+Blockly.Python.quote_(message)+')';
   return [code, Blockly.JavaScript.ORDER_NONE];
 };
+Blockly.JavaScript['text_input'] = function(block) {
+  var message = block.getFieldValue('MESSAGE');
+  var code = 'input('+Blockly.JavaScript.quote_(message)+')';
+  return [code, Blockly.JavaScript.ORDER_NONE];
+};

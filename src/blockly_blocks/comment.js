@@ -11,8 +11,13 @@ Blockly.Blocks['comment_single'] = {
     this.setHelpUrl('');
   }
 };
-
 Blockly.Python['comment_single'] = function(block) {
+  var text_body = block.getFieldValue('BODY');
+  // TODO: Assemble JavaScript into code variable.
+  var code = '# '+text_body+'\n';
+  return code;
+};
+Blockly.JavaScript['comment_single'] = function(block) {
   var text_body = block.getFieldValue('BODY');
   // TODO: Assemble JavaScript into code variable.
   var code = '# '+text_body+'\n';
@@ -40,10 +45,15 @@ Blockly.Blocks['string_multiline'] = {
     return new Blockly.FieldImage(file, 12, 12, '"');
   }
 };
-
 Blockly.Python['string_multiline'] = function(block) {
   var text_body = block.getFieldValue('TEXT');
   // TODO: Assemble JavaScript into code variable.
   var code = '"""'+text_body+'"""\n';
   return [code, Blockly.Python.ORDER_ATOMIC];
+};
+Blockly.JavaScript['string_multiline'] = function(block) {
+  var text_body = block.getFieldValue('TEXT');
+  // TODO: Assemble JavaScript into code variable.
+  var code = '"""'+text_body+'"""\n';
+  return [code, Blockly.JavaScript.ORDER_ATOMIC];
 };

@@ -36,7 +36,6 @@ Blockly.Blocks['controls_forEach'] = {
   },
   customContextMenu: Blockly.Blocks['controls_for'].customContextMenu
 };
-
 Blockly.Python['controls_forEach'] = function(block) {
   // For each loop.
   var variable0 = Blockly.Python.valueToCode(block, 'VAR',
@@ -47,5 +46,17 @@ Blockly.Python['controls_forEach'] = function(block) {
   branch = Blockly.Python.addLoopTrap(branch, block.id) ||
       Blockly.Python.PASS;
   var code = 'for ' + variable0 + ' in ' + argument0 + ':\n' + branch;
+  return code;
+};
+Blockly.JavaScript['controls_forEach'] = function(block) {
+  // For each loop.
+  var variable0 = Blockly.JavaScript.valueToCode(block, 'VAR',
+      Blockly.JavaScript.ORDER_RELATIONAL) || '___';
+  var argument0 = Blockly.JavaScript.valueToCode(block, 'LIST',
+      Blockly.JavaScript.ORDER_RELATIONAL) || '___';
+  var branch = Blockly.JavaScript.statementToCode(block, 'DO');
+  branch = Blockly.JavaScript.addLoopTrap(branch, block.id) ||
+      Blockly.JavaScript.PASS;
+  var code = 'for (' + variable0 + ' in ' + argument0 + ') {\n' + branch + '\n}\n';
   return code;
 };

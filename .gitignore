@@ -3,6 +3,7 @@ ignore/
 kennel_dist/
 blockly_backup/
 closure-compiler/
+closure-library/
 research/
 test_corgis/
 advertising/*.mp4

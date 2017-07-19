@@ -26,3 +26,12 @@ Blockly.Python['list_comprehension'] = function(block) {
   // TODO: Change ORDER_NONE to the correct strength.
   return [code, Blockly.Python.ORDER_NONE];
 };
+Blockly.JavaScript['list_comprehension'] = function(block) {
+  var value_body = Blockly.JavaScript.valueToCode(block, 'body', Blockly.JavaScript.ORDER_ATOMIC) || '___';
+  var value_var = Blockly.JavaScript.valueToCode(block, 'var', Blockly.JavaScript.ORDER_ATOMIC) || '___';
+  var value_list = Blockly.JavaScript.valueToCode(block, 'list', Blockly.JavaScript.ORDER_ATOMIC) || '___';
+  // TODO: Assemble JavaScript into code variable.
+  var code = '['+value_body+' for '+value_var+' in '+value_list+']';
+  // TODO: Change ORDER_NONE to the correct strength.
+  return [code, Blockly.JavaScript.ORDER_NONE];
+};

@@ -1,14 +1,4 @@
-Blockly.Python['set_create'] = function(block) {
-    // Create a list with any number of elements of any type.
-  var elements = new Array(block.itemCount_);
-  console.log(block.itemCount_)
-  for (var i = 0; i < block.itemCount_; i++) {
-    elements[i] = Blockly.Python.valueToCode(block, 'ADD' + i,
-        Blockly.Python.ORDER_NONE) || '___';
-  }
-  var code = '{' + elements.join(', ') + '}';
-  return [code, Blockly.Python.ORDER_ATOMIC];
-}
+
 Blockly.Blocks['set_create'] = {
   /**
    * Block for creating a list with any number of elements of any type.
@@ -48,4 +38,28 @@ Blockly.Blocks['set_create'] = {
    * @this Blockly.Block
    */
   updateShape_: PLUS_MINUS_updateShape('ADD', "create set of")
+};
+Blockly.Python['set_create'] = function(block) {
+    // Create a list with any number of elements of any type.
+  var elements = new Array(block.itemCount_);
+  console.log(block.itemCount_)
+  for (var i = 0; i < block.itemCount_; i++) {
+    elements[i] = Blockly.Python.valueToCode(block, 'ADD' + i,
+        Blockly.Python.ORDER_NONE) || '___';
+  }
+  var code = '{' + elements.join(', ') + '}';
+  return [code, Blockly.Python.ORDER_ATOMIC];
+};
+// TODO: Add this to our JavaScript function library
+// https://gist.github.com/nitsas/8acc439168ad610b7286abf34c1242d3
+Blockly.JavaScript['set_create'] = function(block) {
+    // Create a list with any number of elements of any type.
+  var elements = new Array(block.itemCount_);
+  console.log(block.itemCount_)
+  for (var i = 0; i < block.itemCount_; i++) {
+    elements[i] = Blockly.JavaScript.valueToCode(block, 'ADD' + i,
+        Blockly.JavaScript.ORDER_NONE) || '___';
+  }
+  var code = 'set([' + elements.join(', ') + '])';
+  return [code, Blockly.JavaScript.ORDER_ATOMIC];
 };

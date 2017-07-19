@@ -202,7 +202,6 @@ Blockly.Blocks['controls_if_better'] = {
     }
   }
 };
-
 Blockly.Python['controls_if_better'] = function(block) {
   // If/elseif/else condition.
   var n = 0;
@@ -221,6 +220,27 @@ Blockly.Python['controls_if_better'] = function(block) {
     branchCode = Blockly.Python.statementToCode(block, 'ELSE') ||
         Blockly.Python.PASS;
     code += 'else:\n' + branchCode;
+  }
+  return code;
+};
+Blockly.JavaScript['controls_if_better'] = function(block) {
+  // If/elseif/else condition.
+  var n = 0;
+  var code = '', branchCode, conditionCode;
+  do {
+    conditionCode = Blockly.JavaScript.valueToCode(block, 'IF' + n,
+      Blockly.JavaScript.ORDER_NONE) || '___';
+    branchCode = Blockly.JavaScript.statementToCode(block, 'DO' + n) ||
+        Blockly.JavaScript.PASS;
+    code += (n == 0 ? 'if (' : 'elif (' ) + conditionCode + ') {\n' + branchCode + '\n}\n';
+
+    ++n;
+  } while (block.getInput('IF' + n));
+
+  if (block.getInput('ELSE')) {
+    branchCode = Blockly.JavaScript.statementToCode(block, 'ELSE') ||
+        Blockly.JavaScript.PASS;
+    code += 'else {' + branchCode + '\n}\n';
   }
   return code;
 };

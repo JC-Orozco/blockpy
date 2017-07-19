@@ -1,14 +1,3 @@
-Blockly.Python['lists_create'] = function(block) {
-    // Create a list with any number of elements of any type.
-  var elements = new Array(block.itemCount_);
-  console.log(block.itemCount_)
-  for (var i = 0; i < block.itemCount_; i++) {
-    elements[i] = Blockly.Python.valueToCode(block, 'ADD' + i,
-        Blockly.Python.ORDER_NONE) || '___';
-  }
-  var code = '[' + elements.join(', ') + ']';
-  return [code, Blockly.Python.ORDER_ATOMIC];
-}
 Blockly.Blocks['lists_create'] = {
   /**
    * Block for creating a list with any number of elements of any type.
@@ -49,3 +38,25 @@ Blockly.Blocks['lists_create'] = {
    */
   updateShape_: PLUS_MINUS_updateShape('ADD', "create list of")
 };
+Blockly.Python['lists_create'] = function(block) {
+    // Create a list with any number of elements of any type.
+  var elements = new Array(block.itemCount_);
+  console.log(block.itemCount_)
+  for (var i = 0; i < block.itemCount_; i++) {
+    elements[i] = Blockly.Python.valueToCode(block, 'ADD' + i,
+        Blockly.Python.ORDER_NONE) || '___';
+  }
+  var code = '[' + elements.join(', ') + ']';
+  return [code, Blockly.Python.ORDER_ATOMIC];
+}
+Blockly.JavaScript['lists_create'] = function(block) {
+    // Create a list with any number of elements of any type.
+  var elements = new Array(block.itemCount_);
+  console.log(block.itemCount_)
+  for (var i = 0; i < block.itemCount_; i++) {
+    elements[i] = Blockly.JavaScript.valueToCode(block, 'ADD' + i,
+        Blockly.JavaScript.ORDER_NONE) || '___';
+  }
+  var code = '[' + elements.join(', ') + ']';
+  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+}
