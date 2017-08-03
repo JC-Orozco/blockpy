@@ -48,13 +48,15 @@ function BlockPyEditor(main, tag) {
     this.initBlockly();
     this.initInstructor();
     
+    this.main.model.program.subscribe(function() {
+        editor.updateBlocksFromModel();
+        editor.updateTextFromModel();
+    });
+    
     var editor = this;
     
     // Handle mode switching
     this.main.model.settings.editor.subscribe(function() {editor.setMode()});
-    
-    // Handle level switching
-    this.main.model.settings.level.subscribe(function() {editor.setLevel()});
     
     // Handle filename switching
     this.main.model.settings.filename.subscribe(function (name) {
@@ -87,9 +89,8 @@ BlockPyEditor.prototype.initBlockly = function() {
         //editor.main.components.feedback.clearEditorErrors();
         editor.blockly.highlightBlock(null);
         editor.updateBlocks();
-        //editor.updateBlocks();
     });
-    this.main.model.program.subscribe(function() {editor.updateBlocksFromModel()});
+    
     this.main.model.settings.filename.subscribe(function() {
         /*if (editor.main.model.settings.editor() == "Blocks") {
             editor.updateBlocksFromModel()
@@ -104,6 +105,7 @@ BlockPyEditor.prototype.initBlockly = function() {
     Blockly.captureDialog_ = this.copyImage.bind(this);
     
     // Enable static type checking! 
+    /*
     this.blockly.addChangeListener(function() {
         if (!editor.main.model.settings.disable_variable_types()) {
             var variables = editor.main.components.engine.analyzeVariables()
@@ -125,6 +127,7 @@ BlockPyEditor.prototype.initBlockly = function() {
             })
         }
     });
+    */
 
 
 };
@@ -169,24 +172,16 @@ BlockPyEditor.prototype.initText = function() {
         //editor.main.components.feedback.clearEditorErrors();
         editor.updateText()
     });
-    this.main.model.program.subscribe(function() {editor.updateTextFromModel()});
+
     // Ensure that it fills the editor area
     this.codeMirror.setSize(null, "100%");
-    
-    // Was toying with buttons for injecting code. These are deprecated now.
-    this.tag.find('.blockpy-text-insert-if').click(function() {
-        var line_number = blockpy.components.editor.codeMirror.getCursor().line;
-        var line = blockpy.components.editor.codeMirror.getLine(line_number);
-        var whitespace = line.match(/^(\s*)/)[1];
-        editor.codeMirror.replaceSelection("if ___:\n    "+whitespace+"pass");
-    });
-    this.tag.find('.blockpy-text-insert-if-else').click(function() {
-        var line_number = blockpy.components.editor.codeMirror.getCursor().line;
-        var line = blockpy.components.editor.codeMirror.getLine(line_number);
-        var whitespace = line.match(/^(\s*)/)[1];
-        editor.codeMirror.replaceSelection("if ___:\n    "+whitespace+"pass\n"+whitespace+"else:\n    "+whitespace+"pass");
-    });
 };
+
+BlockPyEditor.prototype.reloadIntroduction = function() {
+    var introductionEditor = this.tag.find('.blockpy-presentation-body-editor');
+    var model = this.main.model;
+    introductionEditor.code(model.assignment.introduction());
+}
 
 /**
  * Initializes the Instructor tab, which has a number of buttons and menus for
@@ -194,7 +189,7 @@ BlockPyEditor.prototype.initText = function() {
  * SummerNote instance used for editing the Introduction of the assignment.
  */
 BlockPyEditor.prototype.initInstructor = function() {
-    var introductionEditor = this.instructorTag.find('.blockpy-presentation-body-editor');
+    var introductionEditor = this.tag.find('.blockpy-presentation-body-editor');
     var model = this.main.model;
     introductionEditor.summernote({
         codemirror: { // codemirror options
@@ -208,9 +203,9 @@ BlockPyEditor.prototype.initInstructor = function() {
             ['misc', ['codeview', 'help']]
         ]
     });
-    introductionEditor.code(model.assignment.introduction());
+    this.reloadIntroduction();
     
-    this.availableModules = this.instructorTag.find('.blockpy-available-modules');
+    this.availableModules = this.tag.find('.blockpy-available-modules');
     this.availableModules.multiSelect({ selectableOptgroup: true });
     
     
@@ -627,7 +622,9 @@ BlockPyEditor.prototype.previousLine = null;
  */
 BlockPyEditor.prototype.refreshHighlight = function() {
     if (this.previousLine !== null) {
-        this.codeMirror.addLineClass(this.previousLine, 'text', 'editor-error-line');
+        if (this.previousLine < this.codeMirror.lineCount()) {
+            this.codeMirror.addLineClass(this.previousLine, 'text', 'editor-error-line');
+        }
     }
     // TODO: Shouldn't this refresh the highlight in the block side too?
 }
@@ -640,10 +637,14 @@ BlockPyEditor.prototype.refreshHighlight = function() {
  */
 BlockPyEditor.prototype.highlightLine = function(line) {
     if (this.previousLine !== null) {
-        this.codeMirror.removeLineClass(this.previousLine, 'text', 'editor-active-line');
-        this.codeMirror.removeLineClass(this.previousLine, 'text', 'editor-error-line');
+        if (this.previousLine < this.codeMirror.lineCount()) {
+            this.codeMirror.removeLineClass(this.previousLine, 'text', 'editor-active-line');
+            this.codeMirror.removeLineClass(this.previousLine, 'text', 'editor-error-line');
+        }
     }
-    this.codeMirror.addLineClass(line, 'text', 'editor-active-line');
+    if (line < this.codeMirror.lineCount()) {
+        this.codeMirror.addLineClass(line, 'text', 'editor-active-line');
+    }
     this.previousLine = line;
 }
 
@@ -655,10 +656,14 @@ BlockPyEditor.prototype.highlightLine = function(line) {
  */
 BlockPyEditor.prototype.highlightError = function(line) {
     if (this.previousLine !== null) {
-        this.codeMirror.removeLineClass(this.previousLine, 'text', 'editor-active-line');
-        this.codeMirror.removeLineClass(this.previousLine, 'text', 'editor-error-line');
+        if (this.previousLine < this.codeMirror.lineCount()) {
+            this.codeMirror.removeLineClass(this.previousLine, 'text', 'editor-active-line');
+            this.codeMirror.removeLineClass(this.previousLine, 'text', 'editor-error-line');
+        }
     }
-    this.codeMirror.addLineClass(line, 'text', 'editor-error-line');
+    if (line < this.codeMirror.lineCount()) {
+        this.codeMirror.addLineClass(line, 'text', 'editor-error-line');
+    }
     this.refreshBlockHighlight(line);
     this.previousLine = line;
 }
@@ -727,8 +732,10 @@ BlockPyEditor.prototype.unhighlightBlock = function() {
  */
 BlockPyEditor.prototype.unhighlightLines = function() {
     if (this.previousLine !== null) {
-        this.codeMirror.removeLineClass(this.previousLine, 'text', 'editor-active-line');
-        this.codeMirror.removeLineClass(this.previousLine, 'text', 'editor-error-line');
+        if (this.previousLine < this.codeMirror.lineCount()) {
+            this.codeMirror.removeLineClass(this.previousLine, 'text', 'editor-active-line');
+            this.codeMirror.removeLineClass(this.previousLine, 'text', 'editor-error-line');
+        }
     }
     this.previousLine = null;
 }

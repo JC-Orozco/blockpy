@@ -11,7 +11,6 @@
     }
 
     var filename = '__main__.py';
-    var analyzer;
 
     //var python_source = 'sum([1,2])/len([4,5,])\ntotal=0\ntotal=total+1\nimport weather\nimport matplotlib.pyplot as plt\ncelsius_temperatures = []\nexisting=weather.get_forecasts("Miami, FL")\nfor t in existing:\n    celsius = (t - 32) / 2\n    celsius_temperatures.append(celsius)\nplt.plot(celsius_temperatures)\nplt.title("Temperatures in Miami")\nplt.show()';
     var python_source = 'if 5:\n    a = 0\n    b = 0\n    c = 0\nelif "yes":\n    a = 3\n    b = 3\nelse:\n    a = 5\n    if True:\n        b = 7\n    else:\n        b = 3\nprint(a)\nprint(b)';
@@ -25,7 +24,9 @@
         ['a = 0\nb = 5', ['Overwritten variables'], ['Unread variables']],
         ['a = [1]\nprint(a)\na = [1]\nprint(a)', [], []],
         // Iterating over the result of a builtin
-        ['x = xrange(100)\nprint(x)', ['Non-list iterations'], []],
+        ['x = range(100)\nprint(x)', ['Non-list iterations'], []],
+        ['x = range(100)\nfor y in x:\n    print(y)', ['Non-list iterations'], []],
+        ['x = range(100)\nfor y in x:\n    pass\nfor z in y:\n    print(z)', [], ['Non-list iterations']],
         // Unconnected blocks
         ['a = ___', [], ['Unconnected blocks']],
         ['print(___)', [], ['Unconnected blocks']],
@@ -51,6 +52,8 @@
         ['y = [1,2,3]\nfor x in y:\n\tpass', ['Unread variables', 'Undefined variables'], []],
         // Iterate through empty list
         ['y = []\nfor x in y:\n\tpass', ['Unread variables', 'Undefined variables'], ['Empty iterations']],
+        // Iterated through list of strings, then iterated through an element
+        ['ss = ["Testing", "Here"]\nfor a in ss:\n    print(a)\nfor b in a:\n    print(b)', ['Non-list iterations'], []],
         // Iterate through number
         ['y = 5\nfor x in y:\n\tpass', ['Unread variables', 'Undefined variables'], ['Non-list iterations']],
         // Iterate over iteration variable
@@ -99,11 +102,17 @@
     ];
     
     var errors = 0;
+    var analyzer = new AbstractInterpreter();
     for (var i = 0, len = unit_tests.length; i < len; i = i+1) {
         var source = unit_tests[i][0],
             nones = unit_tests[i][1],
             somes = unit_tests[i][2];
-        analyzer = new AbstractInterpreter(source);
+        analyzer.processCode(source);
+        if (analyzer.report.error !== false) {
+            console.error("AI Tests: Error message in "+nones[j], "\n"+source, "\n"+analyzer.report.error);
+            errors += 1;
+            continue;
+        }
         for (var j = 0, len2 = nones.length; j < len2; j=j+1) {
             if (analyzer.report[nones[j]].length > 0) {
                 console.error("AI Tests: Incorrectly detected "+nones[j], "\n"+source);

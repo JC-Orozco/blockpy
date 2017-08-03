@@ -13,27 +13,33 @@ function BlockPyCorgis(main) {
     this.main = main;
     
     this.loadedDatasets = [];
-    
+    this.loadDatasets();
+}
+
+BlockPyCorgis.prototype.loadDatasets = function(silently) {
     // Load in each the datasets
-    var corgis = this;
+    var corgis = this,
+        model = this.main.model,
+        editor = this.main.components.editor,
+        server = this.main.components.server;
     var imports = [];
-    this.main.model.assignment.modules().forEach(function(name) {
+    model.assignment.modules().forEach(function(name) {
         var post_prefix = name.substring(7).replace(/\s/g, '_').toLowerCase();
         if (!(name in BlockPyEditor.CATEGORY_MAP)) {
-            imports.push.apply(imports, corgis.importDataset(post_prefix, name));
+            imports.push.apply(imports, corgis.importDataset(post_prefix, name, silently));
         }
     });
     
     // When datasets are loaded, update the toolbox.
     $.when.apply($, imports).done(function() {
-        if (main.model.settings.editor() == "Blocks") {
-            main.components.editor.updateBlocksFromModel();
+        if (model.settings.editor() == "Blocks") {
+            editor.updateBlocksFromModel();
         }
-        main.components.editor.updateToolbox(true);
+        editor.updateToolbox(true);
     }).fail(function(e) {
         console.error(e);
     }).always(function() {
-        main.components.server.finalizeSubscriptions();
+        server.finalizeSubscriptions();
     });
 }
 
@@ -49,7 +55,7 @@ function BlockPyCorgis(main) {
  * @param {String} name - The user-friendly version of the dataset name.
  * @returns {Array.<Deferred>} - Returns the async requests as deferred objects.
  */
-BlockPyCorgis.prototype.importDataset = function(slug, name) {
+BlockPyCorgis.prototype.importDataset = function(slug, name, silently) {
     var url_retrievals = [];
     if (this.main.model.server_is_connected('import_datasets')) {
         var root = this.main.model.constants.urls.import_datasets+'blockpy/'+slug+'/'+slug;
@@ -64,8 +70,15 @@ BlockPyCorgis.prototype.importDataset = function(slug, name) {
         var corgis = this;
         $.when(get_dataset, get_skulpt, get_blockly).done(function() {
             corgis.loadedDatasets.push(slug);
-            corgis.main.model.assignment.modules.push(name);
-            corgis.main.components.editor.addAvailableModule(name);
+            if (silently) {
+                corgis.main.model.settings.server_connected(false);
+                corgis.main.model.assignment.modules.push(name);
+                corgis.main.components.editor.addAvailableModule(name);
+                corgis.main.model.settings.server_connected(true);
+            } else {
+                corgis.main.model.assignment.modules.push(name);
+                corgis.main.components.editor.addAvailableModule(name);
+            }
             corgis.main.model.status.dataset_loading.pop();
         });
         url_retrievals.push(get_dataset, get_skulpt, get_blockly);
