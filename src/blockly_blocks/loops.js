@@ -10,7 +10,8 @@ Blockly.Blocks['controls_forEach'] = {
         {
           "type": "input_value",
           "name": "VAR",
-          "check": "Tuple"
+          "check": null
+          //"check": "Tuple"
         },
         {
           "type": "input_value",
