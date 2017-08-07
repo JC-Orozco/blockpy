@@ -1,3 +1,5 @@
+var DATA_HUE = 210;
+
 var DAYS = [
     ["Monday", "MON"],
     ["Tuesday", "TUE"],
