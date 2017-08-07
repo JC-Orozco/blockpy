@@ -361,3 +361,12 @@ Blockly.Python['lists_reverse'] = function(block) {
   var code = 'list(reversed(' + list + '))';
   return [code, Blockly.Python.ORDER_FUNCTION_CALL];
 };
+
+Blockly.Python['lists_append'] = function(block) {
+  // Append
+  var list = Blockly.Python.valueToCode(block, 'LIST',
+      Blockly.Python.ORDER_MEMBER) || '___';
+  var value = Blockly.Python.valueToCode(block, 'ITEM',
+      Blockly.Python.ORDER_NONE) || '___';
+  return list + '.append(' + value + ')\n';
+};
