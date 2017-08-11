@@ -85,6 +85,26 @@ Blockly.FieldTextArea.prototype.dispose = function() {
 };
 
 /**
+ * Set the value of this field.
+ * @param {?string} newValue New value.
+ * @override
+ */
+Blockly.FieldTextInput.prototype.setValue = function(newValue) {
+  if (newValue === null) {
+    return;  // No change if null.
+  }
+  if (this.sourceBlock_) {
+    var validated = this.callValidator(newValue);
+    // If the new value is invalid, validation returns null.
+    // In this case we still want to display the illegal result.
+    if (validated !== null) {
+      newValue = validated;
+    }
+  }
+  Blockly.Field.prototype.setValue.call(this, newValue);
+};
+
+/**
  * Set the text in this field.
  * @param {?string} text New text.
  * @override
@@ -111,12 +131,18 @@ Blockly.FieldTextArea.prototype.setText = function(text) {
   this.text_ = text;
   this.updateTextNode_();
 
-  if (this.sourceBlock_ && this.sourceBlock_.rendered) {
-    this.sourceBlock_.render();
-    this.sourceBlock_.bumpNeighbours_();
-    Blockly.Events.fire(new Blockly.Events.Change(this.sourceBlock_, 'field', this.name, oldText, text));
-    //this.sourceBlock_.workspace.fireChangeEvent();
+//  if (this.sourceBlock_ && this.sourceBlock_.rendered) {
+//    this.sourceBlock_.render();
+//    this.sourceBlock_.bumpNeighbours_();
+//    Blockly.Events.fire(new Blockly.Events.Change(this.sourceBlock_, 'field', this.name, oldText, text));
+//    
+//    //this.sourceBlock_.workspace.fireChangeEvent();
+//  }
+  if (this.sourceBlock_ && Blockly.Events.isEnabled()) {
+    Blockly.Events.fire(new Blockly.Events.BlockChange(
+        this.sourceBlock_, 'field', this.name, oldText, text));
   }
+  Blockly.Field.prototype.setText.call(this, text);
 };
 
 
@@ -151,7 +177,7 @@ Blockly.FieldTextArea.prototype.updateTextNode_ = function() {
   //var textNode = document.createTextNode(text);
   text.split(/\n/).map(function(textline){
     textline = textline.replace(/\s/g, Blockly.Field.NBSP);
-    var tspan = Blockly.createSvgElement('tspan', {x:0,y:y}, that.textElement_);
+    var tspan = Blockly.utils.createSvgElement('tspan', {x:0,y:y}, that.textElement_);
     var textNode = document.createTextNode(textline);
     tspan.appendChild(textNode);
     y+=20;
@@ -160,13 +186,16 @@ Blockly.FieldTextArea.prototype.updateTextNode_ = function() {
   // Cached width is obsolete.  Clear it.
   this.size_.width = 0;
   
-  var that = this;
+  var that2 = this;
   this.fixAfterLoad = setTimeout(function() {
-    that.render_();
+    that2.render_();
     if (this.sourceBlock_ && this.sourceBlock_.rendered) {
-        that.sourceBlock_.render();
+        that2.sourceBlock_.render();
     }
-  }, 0);
+    // JCOA: Temporary test (2 lines)
+    //this.resizeEditor_();
+    //Blockly.svgResize(this.sourceBlock_.workspace);
+  }, 0);  // Test change to 200, was 0. None of this 3 changes helped.
 };
 
 /**
@@ -216,6 +245,8 @@ Blockly.FieldTextArea.prototype.showEditor_ = function(opt_quietInput) {
 
   Blockly.WidgetDiv.show(this, this.sourceBlock_.RTL, this.widgetDispose_());
   var div = Blockly.WidgetDiv.DIV;
+  
+  
   // Create the input.
   var htmlInput = goog.dom.createDom('textarea', 'blocklyHtmlInput');
   var fontSize = (Blockly.FieldTextArea.FONTSIZE *this.sourceBlock_.workspace.scale) + 'pt';
@@ -294,6 +325,7 @@ Blockly.FieldTextArea.prototype.onHtmlInputChange_ = function(e) {
       this.sourceBlock_.render();
     }
     this.resizeEditor_();
+    Blockly.svgResize(this.sourceBlock_.workspace);
   }
 };
 
@@ -310,9 +342,9 @@ Blockly.FieldTextArea.prototype.validate_ = function() {
     valid = this.changeHandler_(htmlInput.value);
   }
   if (valid === null) {
-    Blockly.addClass_(htmlInput, 'blocklyInvalidInput');
+    Blockly.utils.addClass(htmlInput, 'blocklyInvalidInput');
   } else {
-    Blockly.removeClass_(htmlInput, 'blocklyInvalidInput');
+    Blockly.utils.removeClass(htmlInput, 'blocklyInvalidInput');
   }
 };
 
@@ -380,6 +412,7 @@ Blockly.FieldTextArea.prototype.widgetDispose_ = function() {
     Blockly.unbindEvent_(htmlInput.onKeyPressWrapper_);
     thisField.sourceBlock_.workspace.removeChangeListener(htmlInput.onWorkspaceChangeWrapper_);
     Blockly.FieldTextArea.htmlInput_ = null;
+    Blockly.Events.setGroup(false);
     // Delete the width property.
     var style = Blockly.WidgetDiv.DIV.style;
     style.width = 'auto';

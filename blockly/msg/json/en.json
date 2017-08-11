@@ -1,7 +1,7 @@
 {
 	"@metadata": {
 		"author": "Ellen Spertus <ellen.spertus@gmail.com>",
-		"lastupdated": "2017-07-26 23:58:11.372000",
+		"lastupdated": "2017-08-07 16:26:42.934000",
 		"locale": "en",
 		"messagedocumentation" : "qqq"
 	},
@@ -392,5 +392,20 @@
 	"PROCEDURES_CREATE_DO": "Create '%1'",
 	"PROCEDURES_IFRETURN_TOOLTIP": "If a value is true, then return a second value.",
 	"PROCEDURES_IFRETURN_HELPURL": "http://c2.com/cgi/wiki?GuardClause",
-	"PROCEDURES_IFRETURN_WARNING": "Warning: This block may be used only within a function definition."
+	"PROCEDURES_IFRETURN_WARNING": "Warning: This block may be used only within a function definition.",
+	"DICT_GET": "get key",
+	"DICT_GET_TO": "of",
+	"DICT_KEYS": "get all keys from",
+	"DICTS_CREATE_WITH_CONTAINER_TITLE_ADD": "Create Dictionary",
+	"DICTS_CREATE_WITH_ITEM_TITLE": "key/value",
+	"DICTS_CREATE_WITH_INPUT_WITH": "create dict with",
+	"DICTS_CREATE_WITH_ITEM_KEY": "key",
+	"DICTS_CREATE_WITH_ITEM_MAPPING": ":",
+	"DICTS_CREATE_EMPTY_TITLE": "empty dictionary",
+	"DICTS_CREATE_WITH_TOOLTIP": "",
+	"DICTS_CREATE_WITH_CONTAINER_TOOLTIP": "",
+	"DICTS_CREATE_WITH_ITEM_TOOLTIP": "",
+	"TYPE_CHECK": "type of",
+	"TEXT_PRINT_TITLE_PRINT": "print",
+	"TEXT_PRINT_TOOLTIP": ""
 }
