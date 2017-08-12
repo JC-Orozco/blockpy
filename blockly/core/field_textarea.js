@@ -192,12 +192,13 @@ Blockly.FieldTextArea.prototype.updateTextNode_ = function() {
   var that2 = this;
   this.fixAfterLoad = setTimeout(function() {
     that2.render_();
-    if (this.sourceBlock_ && this.sourceBlock_.rendered) {
+    if (that2.sourceBlock_ && that2.sourceBlock_.rendered) {
         that2.sourceBlock_.render();
+        // JCOA Test the next code line:
+        //Blockly.svgResize(that2.sourceBlock_.workspace);
     }
-    // JCOA: Temporary test (2 lines)
+    // JCOA: Test the next code line: 
     //this.resizeEditor_();
-    //Blockly.svgResize(this.sourceBlock_.workspace);
   }, 0);  // Test change to 200, was 0. None of this 3 changes helped.
 };
 
@@ -210,7 +211,6 @@ Blockly.FieldTextArea.prototype.render_ = function() {
     if (!this.visible_ || !this.textElement_) {
         return;
     }
-    // JCOA Test the next code line:
     this.updateTextNode_();
     this.size_.width = this.textElement_.getBBox().width + 5;
     this.size_.height= (this.text_.split(/\n/).length ||1)*20 + (Blockly.BlockSvg.SEP_SPACE_Y+5) ;
@@ -229,6 +229,7 @@ Blockly.FieldTextArea.prototype.render_ = function() {
  * @private
  */
 Blockly.FieldTextArea.prototype.showEditor_ = function(opt_quietInput) {
+  this.workspace_ = this.sourceBlock_.workspace;
   var quietInput = opt_quietInput || false;
   if (!quietInput && (goog.userAgent.MOBILE || goog.userAgent.ANDROID ||
                       goog.userAgent.IPAD)) {
@@ -286,7 +287,7 @@ Blockly.FieldTextArea.prototype.showEditor_ = function(opt_quietInput) {
   var workspaceSvg = this.sourceBlock_.workspace.getCanvas();
   
   htmlInput.onWorkspaceChangeWrapper_ = this.resizeEditor_.bind(this);
-  this.sourceBlock_.workspace.addChangeListener(htmlInput.onWorkspaceChangeWrapper_);
+  this.workspace_.addChangeListener(htmlInput.onWorkspaceChangeWrapper_);
 };
 
 /**
@@ -413,7 +414,7 @@ Blockly.FieldTextArea.prototype.widgetDispose_ = function() {
     thisField.sourceBlock_.rendered && thisField.sourceBlock_.render();
     Blockly.unbindEvent_(htmlInput.onKeyUpWrapper_);
     Blockly.unbindEvent_(htmlInput.onKeyPressWrapper_);
-    thisField.sourceBlock_.workspace.removeChangeListener(htmlInput.onWorkspaceChangeWrapper_);
+    thisField.workspace_.removeChangeListener(htmlInput.onWorkspaceChangeWrapper_);
     Blockly.FieldTextArea.htmlInput_ = null;
     Blockly.Events.setGroup(false);
     // Delete the width property.
