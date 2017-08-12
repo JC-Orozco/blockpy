@@ -23,7 +23,9 @@
  * @author fraser@google.com (Neil Fraser)
  * @author Andrew Mee
  * @author acbart@vt.edu (Austin Cory Bart)
+ * @author JC-Orozco (Juan Carlos Orozco)
  */
+
 'use strict';
 
 goog.provide('Blockly.FieldTextArea');
@@ -38,16 +40,15 @@ goog.require('goog.userAgent');
 /**
  * Class for an editable text field.
  * @param {string} text The initial content of the field.
- * @param {Function} opt_changeHandler An optional function that is called
+ * @param {Function} opt_validator An optional function that is called
  *     to validate any constraints on what the user entered.  Takes the new
  *     text as an argument and returns either the accepted text, a replacement
  *     text, or null to abort the change.
  * @extends {Blockly.Field}
  * @constructor
  */
-Blockly.FieldTextArea = function(text, opt_changeHandler) {
-  Blockly.FieldTextArea.superClass_.constructor.call(this, text);
-  this.changeHandler_ = opt_changeHandler;
+Blockly.FieldTextArea = function(text, opt_validator) {
+  Blockly.FieldTextArea.superClass_.constructor.call(this, text, opt_validator);
 };
 goog.inherits(Blockly.FieldTextArea, Blockly.Field);
 
@@ -62,7 +63,7 @@ Blockly.FieldTextArea.FONTSIZE = 11;
  *   with the current values of the arguments used during construction.
  */
 Blockly.FieldTextArea.prototype.clone = function() {
-  return new Blockly.FieldTextArea(this.getText(), this.changeHandler_);
+  return new Blockly.FieldTextArea(this.getText(), this.getValidator());
 };
 
 /**
@@ -89,7 +90,7 @@ Blockly.FieldTextArea.prototype.dispose = function() {
  * @param {?string} newValue New value.
  * @override
  */
-Blockly.FieldTextInput.prototype.setValue = function(newValue) {
+Blockly.FieldTextArea.prototype.setValue = function(newValue) {
   if (newValue === null) {
     return;  // No change if null.
   }
@@ -106,30 +107,31 @@ Blockly.FieldTextInput.prototype.setValue = function(newValue) {
 
 /**
  * Set the text in this field.
- * @param {?string} text New text.
+ * @param {?string} newText New text.
  * @override
  */
-Blockly.FieldTextArea.prototype.setText = function(text) {
-  if (text === null) {
+Blockly.FieldTextArea.prototype.setText = function(newText) {
+  if (newText === null) {
     // No change if null.
     return;
   }
-  var oldText = this.text_;
-  if (this.sourceBlock_ && this.changeHandler_) {
-    var validated = this.changeHandler_(text);
-    // If the new text is invalid, validation returns null.
-    // In this case we still want to display the illegal result.
-    if (validated !== null && validated !== undefined) {
-      text = validated;
-    }
-  }
-  //Blockly.Field.prototype.setText.call(this, text);
-  if (text === null || text === this.text_) {
+  newText = String(newText);
+  //  var oldText = this.text_;
+  //  if (this.sourceBlock_ && this.getValidator()) {
+  //    var validated = this.callValidator(text);
+  //    // If the new text is invalid, validation returns null.
+  //    // In this case we still want to display the illegal result.
+  //    if (validated !== null && validated !== undefined) {
+  //      text = validated;
+  //    }
+  //  }
+  //  Blockly.Field.prototype.setText.call(this, text);
+  if (newText === null || newText === this.text_) {
     // No change if null.
     return;
   }
-  this.text_ = text;
-  this.updateTextNode_();
+  //this.text_ = text;
+  //this.updateTextNode_();
 
 //  if (this.sourceBlock_ && this.sourceBlock_.rendered) {
 //    this.sourceBlock_.render();
@@ -140,11 +142,12 @@ Blockly.FieldTextArea.prototype.setText = function(text) {
 //  }
   if (this.sourceBlock_ && Blockly.Events.isEnabled()) {
     Blockly.Events.fire(new Blockly.Events.BlockChange(
-        this.sourceBlock_, 'field', this.name, oldText, text));
+        this.sourceBlock_, 'field', this.name, this.text_, newText));
   }
-  Blockly.Field.prototype.setText.call(this, text);
+  
+  Blockly.Field.prototype.setText.call(this, newText);
+  //this.updateTextNode_();
 };
-
 
 /**
  * Update the text node of this field to display the current text.
@@ -207,6 +210,8 @@ Blockly.FieldTextArea.prototype.render_ = function() {
     if (!this.visible_ || !this.textElement_) {
         return;
     }
+    // JCOA Test the next code line:
+    this.updateTextNode_();
     this.size_.width = this.textElement_.getBBox().width + 5;
     this.size_.height= (this.text_.split(/\n/).length ||1)*20 + (Blockly.BlockSvg.SEP_SPACE_Y+5) ;
     if (this.borderRect_) {
@@ -216,8 +221,6 @@ Blockly.FieldTextArea.prototype.render_ = function() {
             this.size_.height -  (Blockly.BlockSvg.SEP_SPACE_Y+5));
     }
 };
-        
-
 
 /**
  * Show the inline free-text editor on top of the text.
@@ -231,8 +234,8 @@ Blockly.FieldTextArea.prototype.showEditor_ = function(opt_quietInput) {
                       goog.userAgent.IPAD)) {
     // Mobile browsers have issues with in-line textareas (focus & keyboards).
     var newValue = window.prompt(Blockly.Msg.CHANGE_VALUE_TITLE, this.text_);
-    if (this.changeHandler_) {
-      var override = this.changeHandler_(newValue);
+    if (this.getValidator()) {
+      var override = this.callValidator(newValue);
       if (override !== undefined) {
         newValue = override;
       }
@@ -338,8 +341,8 @@ Blockly.FieldTextArea.prototype.validate_ = function() {
   var valid = true;
   goog.asserts.assertObject(Blockly.FieldTextArea.htmlInput_);
   var htmlInput = /** @type {!Element} */ (Blockly.FieldTextArea.htmlInput_);
-  if (this.changeHandler_) {
-    valid = this.changeHandler_(htmlInput.value);
+  if (this.getValidator()) {
+    valid = this.callValidator(htmlInput.value);
   }
   if (valid === null) {
     Blockly.utils.addClass(htmlInput, 'blocklyInvalidInput');
@@ -399,8 +402,8 @@ Blockly.FieldTextArea.prototype.widgetDispose_ = function() {
     var htmlInput = Blockly.FieldTextArea.htmlInput_;
     // Save the edit (if it validates).
     var text = htmlInput.value;
-    if (thisField.changeHandler_) {
-      text = thisField.changeHandler_(text);
+    if (thisField.getValidator()) {
+      text = thisField.callValidator(text);
       if (text === null) {
         // Invalid edit.
         text = htmlInput.defaultValue;

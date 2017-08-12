@@ -489,8 +489,8 @@ BlockPyEditor.prototype.setBlocks = function(python_code) {
     if (this.main.model.assignment.parsons()) {
         this.blockly.shuffle();
     } else {
-        // TODO JCOA: Find equivalent instruction on new blockly
-        //this.blockly.align();
+        //this.blockly.align(); // Obsolete
+        this.blockly.cleanUp();
     }
     Blockly.Events.enable();
     if (this.previousLine !== null) {
