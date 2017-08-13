@@ -1,3 +1,5 @@
+/* Ported to latest blockly develop branch july 2017 by JC-Orozco (Juan Carlos Orozco) */
+
 Blockly.Blocks['dicts_create_with'] = {
     /**
      * Block for creating a dict with any number of elements of any type.
