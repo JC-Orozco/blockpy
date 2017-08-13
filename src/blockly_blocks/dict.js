@@ -58,25 +58,46 @@ Blockly.Blocks['dicts_create_with'] = {
     updateShape_: function() {
         var that = this;
         function addField(field, block, e) {
-            var rect = field.fieldGroup_.getBoundingClientRect();
-            var yPosition = e.clientY;
-            if (yPosition < rect.top+rect.height/2) {
+            //var rect = field.fieldGroup_.getBoundingClientRect();
+            //var yPosition = e.clientY;
+            //if (yPosition < rect.top+rect.height/2) {
                 that.itemCount_ += 1;
                 that.addRow(that.itemCount_);
-            } else {
+            //} else {
+            //    if (that.itemCount_ > 0) {
+            //        that.removeInput('VALUE' + that.itemCount_);
+            //        that.itemCount_ -= 1;
+            //    }
+            //}
+            that.fixEmpty_();
+        }
+        function removeField(field, block, e) {
+            //var rect = field.fieldGroup_.getBoundingClientRect();
+            //var yPosition = e.clientY;
+            //if (yPosition < rect.top+rect.height/2) {
+            //    that.itemCount_ += 1;
+            //    that.addRow(that.itemCount_);
+            //} else {
                 if (that.itemCount_ > 0) {
                     that.removeInput('VALUE' + that.itemCount_);
                     that.itemCount_ -= 1;
                 }
-            }
+            //}
             that.fixEmpty_();
         }
-        var clickablePlusMinus = new Blockly.FieldClickImage("images/plus_minus_v.png", 24, 24, '+', addField, '-2px');
         // Rebuild block.
-        if (!this.getInput("START")) {
-            this.appendDummyInput('START')
+        //var clickablePlusMinus = new Blockly.FieldClickImage("images/plus_minus_v.png", 24, 24, '+', addField, '-2px');
+        if (!this.getInput("REMOVE")) {
+            var clickableMinus = new Blockly.FieldClickImage("images/minus-button.svg", 24, 24, '+', removeField, '-2px');
+            this.appendDummyInput('REMOVE')
                 .appendField("dictionary of")
-                .appendField(clickablePlusMinus);
+                .appendField(clickableMinus);
+        }
+        if (!this.getInput("START")) {
+            var clickablePlus = new Blockly.FieldClickImage("images/plus-button.svg", 24, 24, '+', addField, '-2px');
+            this.appendDummyInput('START')
+                //.appendField("dictionary of")
+                .appendField(clickablePlus);
         }
         this.fixEmpty_();
         for (var i = 1; i <= this.itemCount_; i++) {

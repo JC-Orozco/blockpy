@@ -175,8 +175,12 @@ Blockly.Blocks['controls_if_better'] = {
         var clickableCheck = new Blockly.FieldClickImage("images/plus_minus_blue.png", 36, 24, '', changeShape, '-2px');
         //clickablePlusMinus.imageElement_.style.y = '-2px';
         this.appendDummyInput('CONTROLS')
-            .appendField(clickableCheck)
+            .appendField(clickableCheck);
             //.appendField(clickablePlusMinus);
+        //var clickableCheck2 = new Blockly.FieldClickImage("images/plus_minus_blue.png", 36, 24, '', changeShape, '-2px');
+        //this.appendDummyInput('CONTROLS2')
+        //    .appendField(clickableCheck2);
+        //    //.appendField(clickablePlusMinus);
     }
     
     if (this.getInput('ELSE')) {
