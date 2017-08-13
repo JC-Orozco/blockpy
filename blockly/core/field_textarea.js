@@ -253,10 +253,10 @@ Blockly.FieldTextArea.prototype.showEditor_ = function(opt_quietInput) {
   
   // Create the input.
   var htmlInput = goog.dom.createDom('textarea', 'blocklyHtmlInput');
-  var fontSize = (Blockly.FieldTextArea.FONTSIZE *this.sourceBlock_.workspace.scale) + 'pt';
+  var fontSize = (Blockly.FieldTextArea.FONTSIZE *this.workspace_.scale) + 'pt';
   div.style.fontSize = fontSize;
   htmlInput.style.fontSize = fontSize;
-  htmlInput.style.fontFamily = 'monospace';
+  //htmlInput.style.fontFamily = 'monospace'; // JCOA Todo. Are we setting this in css?
   htmlInput.setAttribute('spellcheck', this.spellcheck_);
   Blockly.FieldTextArea.htmlInput_ = htmlInput;
   htmlInput.style.resize = 'none';
@@ -284,7 +284,7 @@ Blockly.FieldTextArea.prototype.showEditor_ = function(opt_quietInput) {
   // Bind to keyPress -- repeatedly resize when holding down a key.
   htmlInput.onKeyPressWrapper_ =
       Blockly.bindEvent_(htmlInput, 'keypress', this, this.onHtmlInputChange_);
-  var workspaceSvg = this.sourceBlock_.workspace.getCanvas();
+  var workspaceSvg = this.workspace_.getCanvas();
   
   htmlInput.onWorkspaceChangeWrapper_ = this.resizeEditor_.bind(this);
   this.workspace_.addChangeListener(htmlInput.onWorkspaceChangeWrapper_);
@@ -362,11 +362,11 @@ Blockly.FieldTextArea.prototype.resizeEditor_ = function() {
   var htmlInput = Blockly.FieldTextArea.htmlInput_;
   //div.style.width = bBox.width + 'px';
   if (htmlInput.clientHeight < htmlInput.scrollHeight) {
-    div.style.width = (bBox.width * this.sourceBlock_.workspace.scale) + 'px';
+    div.style.width = (bBox.width * this.workspace_.scale) + 'px';
   } else {
-    div.style.width = bBox.width * this.sourceBlock_.workspace.scale + 'px';
+    div.style.width = bBox.width * this.workspace_.scale + 'px';
   }
-  div.style.height = bBox.height * this.sourceBlock_.workspace.scale + 'px';
+  div.style.height = bBox.height * this.workspace_.scale + 'px';
   // Position the editor
   var xy = this.getAbsoluteXY_();
   // In RTL mode block fields and LTR input fields the left edge moves,
